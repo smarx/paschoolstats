@@ -9,7 +9,7 @@
         <script src="https://cdn.jsdelivr.net/npm/silkrouter@latest"></script>
         <link rel="icon" href="/static/favicon.png" />
         <style>
-          .hidden {
+          div.hidden {
             display: none !important;
           }
         </style>
@@ -20,14 +20,8 @@
           <h1 class="text-4xl sm:text-6xl text-gray-300 text-center font-black leading-none">Pennsylvania School Stats</h1>
         </header>
         <main class="mx-auto max-w-2xl my-16 px-8">
-          <p class="text-xl text-gray-700">On August 10th, 2020, the Pennsylvania Department of Education released <a class="text-blue-500 underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">guidance</a> for schools deciding between in-person, remote, and blended learning models.</p>
-          <blockquote class="pl-5 border-l-4 border-teal-600 text-gray-700 my-6">
-            <p class="italic text-lg" style="margin: 0.8em 0">The recommendations contained in this guidance rely on two standard public health metrics: <bold class="font-bold text-gray-900">incidence rate</bold> and the <bold class="font-bold text-gray-900">percent positivity</bold> of diagnostic testing. These metrics are available for every county in Pennsylvania on the <a class="text-blue-500 underline" href="https://www.health.pa.gov/topics/disease/coronavirus/Pages/Monitoring-Dashboard.aspx">COVID-19 Early Warning Monitoring System Dashboard</a>.</p>
-            <cite class="font-bold text-sm">&ndash; <a class="hover:text-blue-500 hover:underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">Determining Instructional Models During the COVID-19 Pandemic</a></cite>
-          </blockquote>
-          <p class="text-xl text-gray-700 my-6">The goal of this website is to make it as easy as possible to find the two relevant statistics for each county in Pennsylvania and to see what the Department of Health recommends.</p>
-          <div class="mx-auto w-64 mt-8">
-            <p class="font-bold text-xs uppercase tracking-wide text-gray-600">Choose a county</p>
+          <div class="mx-auto w-64 mb-8">
+            <p class="font-bold text-xs uppercase tracking-wide text-gray-600">View stats for your county</p>
             <div class="county-select hidden inline-block relative w-64">
               <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
                 <option name="" val="" />
@@ -37,6 +31,12 @@
               </div>
             </div>
           </div>
+          <p class="text-xl text-gray-700">On August 10th, 2020, the Pennsylvania Department of Education released <a class="text-blue-500 underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">guidance</a> for schools deciding between in-person, remote, and blended learning models.</p>
+          <blockquote class="pl-5 border-l-4 border-teal-600 text-gray-700 my-6">
+            <p class="italic text-lg" style="margin: 0.8em 0">The recommendations contained in this guidance rely on two standard public health metrics: <bold class="font-bold text-gray-900">incidence rate</bold> and the <bold class="font-bold text-gray-900">percent positivity</bold> of diagnostic testing. These metrics are available for every county in Pennsylvania on the <a class="text-blue-500 underline" href="https://www.health.pa.gov/topics/disease/coronavirus/Pages/Monitoring-Dashboard.aspx">COVID-19 Early Warning Monitoring System Dashboard</a>.</p>
+            <cite class="font-bold text-sm">&ndash; <a class="hover:text-blue-500 hover:underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">Determining Instructional Models During the COVID-19 Pandemic</a></cite>
+          </blockquote>
+          <p class="text-xl text-gray-700 my-6">The goal of this website is to make it as easy as possible to find the two relevant statistics for each county in Pennsylvania and to see what the Department of Health recommends.</p>
         </main>
         <footer class="p-8 bg-gray-700 text-xs text-gray-400">
           <p>This is not an official government website. I created this site to make <a class="text-blue-500 font-semibold hover:underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">the Department of Education guidance</a> and <a class="text-blue-500 font-semibold hover:underline" href="https://www.health.pa.gov/topics/disease/coronavirus/Pages/Monitoring-Dashboard.aspx">associated data</a> easier to understand. If something looks wrong or you have questions or suggestions, please contact me at <a class="font-semibold text-blue-500 hover:underline" href="mailto:smarx@smarx.com">smarx@smarx.com</a>.</p>
@@ -99,7 +99,7 @@
           </div>
         </div>
 
-        <p id="periods" class="text-xs text-gray-600 italic hidden text-center mb-2"><span id="recentPeriod"></span> <span class="mx-2">|</span> <span id="previousPeriod"></span></p>
+        <p id="periods" class="text-xs text-gray-600 italic hidden text-center mb-2"><span id="recentPeriod" class="block sm:inline"></span><span class="hidden sm:inline mx-2">|</span><span id="previousPeriod" class="block sm:inline"></span></p>
         <footer class="p-8 bg-gray-700 text-xs text-gray-400">
           <p>This is not an official government website. I created this site to make <a class="text-blue-500 font-semibold hover:underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">the Department of Education guidance</a> and <a class="text-blue-500 font-semibold hover:underline" href="https://www.health.pa.gov/topics/disease/coronavirus/Pages/Monitoring-Dashboard.aspx">associated data</a> easier to understand. If something looks wrong or you have questions or suggestions, please contact me at <a class="font-semibold text-blue-500 hover:underline" href="mailto:smarx@smarx.com">smarx@smarx.com</a>.</p>
         </footer>
