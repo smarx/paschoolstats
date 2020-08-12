@@ -25,7 +25,7 @@
             <p class="italic text-lg" style="margin: 0.8em 0">The recommendations contained in this guidance rely on two standard public health metrics: <bold class="font-bold text-gray-900">incidence rate</bold> and the <bold class="font-bold text-gray-900">percent positivity</bold> of diagnostic testing. These metrics are available for every county in Pennsylvania on the <a class="text-blue-500 underline" href="https://www.health.pa.gov/topics/disease/coronavirus/Pages/Monitoring-Dashboard.aspx">COVID-19 Early Warning Monitoring System Dashboard</a>.</p>
             <cite class="font-bold text-sm">&ndash; <a class="hover:text-blue-500 hover:underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">Determining Instructional Models During the COVID-19 Pandemic</a></cite>
           </blockquote>
-          <p class="text-xl text-gray-700 my-6">The goal of this website is to make it as easy as possible to find the two relevant statistics for each county in Pennsylvania and see what the Department of Health recommends.</p>
+          <p class="text-xl text-gray-700 my-6">The goal of this website is to make it as easy as possible to find the two relevant statistics for each county in Pennsylvania and to see what the Department of Health recommends.</p>
           <div class="mx-auto w-64 mt-8">
             <p class="font-bold text-xs uppercase tracking-wide text-gray-600">Choose a county</p>
             <div class="county-select hidden inline-block relative w-64">
@@ -331,16 +331,17 @@
             var county = null;
 
             silkrouter.route('/:county', (e) => {
-              if (countyMap === null) {
-                county = title(e.params.county);
-              } else if (countyMap[e.params.county.toUpperCase()]) {
-                populateUI(title(e.params.county));
-              } else {
-                silkrouter.router.set('/', true);
+              county = title(e.params.county);
+              if (countyMap !== null) {
+                if (countyMap[e.params.county.toUpperCase()]) {
+                  populateUI(county);
+                } else {
+                  silkrouter.router.set('/', true);
+                }
               }
               $('#county-loaded').removeClass('hidden');
               $('#county-not-loaded').addClass('hidden');
-              $('.county').text(title(county));
+              $('.county').text(county);
             });
             silkrouter.route('/', (e) => {
               $('.county-select select').val('');
@@ -460,7 +461,11 @@
                 $('#periods').removeClass('hidden');
 
                 if (county !== null) {
-                  populateUI(county);
+                  if (countyMap[county.toUpperCase()]) {
+                    populateUI(county);
+                  } else {
+                    silkrouter.router.set('/', true);
+                  }
                 }
             });
 
