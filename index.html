@@ -15,7 +15,7 @@
         </style>
     </head>
     <body class="bg-gray-200 antialiased" style="font-family: Open Sans;">
-      <div id="county-not-loaded" class="min-h-screen" style="display: grid; grid-template-rows: auto 1fr auto;">
+      <div id="county-not-loaded" class="hidden min-h-screen" style="display: grid; grid-template-rows: auto 1fr auto;">
         <header class="bg-teal-600 p-8">
           <h1 class="text-4xl sm:text-6xl text-gray-300 text-center font-black leading-none">Pennsylvania School Stats</h1>
         </header>
@@ -327,14 +327,20 @@
               "modelId": 297418
             };
 
-            var countyMap = {};
+            var countyMap = null;
+            var county = null;
 
             silkrouter.route('/:county', (e) => {
-              if (countyMap[e.params.county.toUpperCase()]) {
+              if (countyMap === null) {
+                county = title(e.params.county);
+              } else if (countyMap[e.params.county.toUpperCase()]) {
                 populateUI(title(e.params.county));
               } else {
                 silkrouter.router.set('/', true);
               }
+              $('#county-loaded').removeClass('hidden');
+              $('#county-not-loaded').addClass('hidden');
+              $('.county').text(title(county));
             });
             silkrouter.route('/', (e) => {
               $('.county-select select').val('');
@@ -343,10 +349,7 @@
             });
 
             function populateUI(county) {
-              $('#county-loaded').removeClass('hidden');
-              $('#county-not-loaded').addClass('hidden');
               $('.county-select select').val(county.toUpperCase());
-              $('.county').text(county);
               const stats = countyMap[county.toUpperCase()];
 
               const cases = stats[0];
@@ -436,6 +439,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                countyMap = {};
                 data = data.results[0].result.data.dsr.DS[0];
                 var counties = data.ValueDicts.D0;
                 var allStats = data.PH[1].DM1;
@@ -454,6 +458,10 @@
                 $('#recentPeriod').text(lowerFirst(data.C[0].replace('7-day', '*').replace('-', ' – ').replace('*', '7-day')));
                 $('#previousPeriod').text(lowerFirst(data.C[2].replace('7-day', '*').replace('-', ' – ').replace('*', '7-day')));
                 $('#periods').removeClass('hidden');
+
+                if (county !== null) {
+                  populateUI(county);
+                }
             });
 
             function lowerFirst(text) {
