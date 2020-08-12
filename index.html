@@ -1,0 +1,468 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <meta charset="utf-8" />
+        <title>Pennsylvania School Stats</title>
+        <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/silkrouter@latest"></script>
+        <link rel="icon" href="/static/favicon.png" />
+        <style>
+          .hidden {
+            display: none !important;
+          }
+        </style>
+    </head>
+    <body class="bg-gray-200 antialiased" style="font-family: Open Sans;">
+      <div id="county-not-loaded" class="min-h-screen" style="display: grid; grid-template-rows: auto 1fr auto;">
+        <header class="bg-teal-600 p-8">
+          <h1 class="text-4xl sm:text-6xl text-gray-300 text-center font-black leading-none">Pennsylvania School Stats</h1>
+        </header>
+        <main class="mx-auto max-w-2xl my-16 px-8">
+          <p class="text-xl text-gray-700">On August 10th, 2020, the Pennsylvania Department of Education released <a class="text-blue-500 underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">guidance</a> for schools deciding between in-person, remote, and blended learning models.</p>
+          <blockquote class="pl-5 border-l-4 border-teal-600 text-gray-700 my-6">
+            <p class="italic text-lg" style="margin: 0.8em 0">The recommendations contained in this guidance rely on two standard public health metrics: <bold class="font-bold text-gray-900">incidence rate</bold> and the <bold class="font-bold text-gray-900">percent positivity</bold> of diagnostic testing. These metrics are available for every county in Pennsylvania on the <a class="text-blue-500 underline" href="https://www.health.pa.gov/topics/disease/coronavirus/Pages/Monitoring-Dashboard.aspx">COVID-19 Early Warning Monitoring System Dashboard</a>.</p>
+            <cite class="font-bold text-sm">&ndash; <a class="hover:text-blue-500 hover:underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">Determining Instructional Models During the COVID-19 Pandemic</a></cite>
+          </blockquote>
+          <p class="text-xl text-gray-700 my-6">The goal of this website is to make it as easy as possible to find the two relevant statistics for each county in Pennsylvania and see what the Department of Health recommends.</p>
+          <div class="mx-auto w-64 mt-8">
+            <p class="font-bold text-xs uppercase tracking-wide text-gray-600">Choose a county</p>
+            <div class="county-select hidden inline-block relative w-64">
+              <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
+                <option name="" val="" />
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              </div>
+            </div>
+          </div>
+        </main>
+        <footer class="p-8 bg-gray-700 text-xs text-gray-400">
+          <p>This is not an official government website. I created this site to make <a class="text-blue-500 font-semibold hover:underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">the Department of Education guidance</a> and <a class="text-blue-500 font-semibold hover:underline" href="https://www.health.pa.gov/topics/disease/coronavirus/Pages/Monitoring-Dashboard.aspx">associated data</a> easier to understand. If something looks wrong or you have questions or suggestions, please contact me at <a class="font-semibold text-blue-500 hover:underline" href="mailto:smarx@smarx.com">smarx@smarx.com</a>.</p>
+        </footer>  
+      </div>
+      <div id="county-loaded" class="hidden min-h-screen" style="display: grid; grid-template-rows: auto 1fr auto;">
+        <header class="bg-teal-600 p-8">
+          <h1 class="text-4xl sm:text-6xl text-gray-300 text-center font-black leading-none"><span class="county">-</span> County</h1>
+          <h2 id="subheader" class="transition ease-in-out duration-300 opacity-0 text-2xl sm:text-3xl mt-6 sm:mb-4 text-center tracking-tight leading-8 text-opacity-75 text-gray-300 font-thin"><span id="transmission" class="rounded-lg bg-black bg-opacity-25 text-white text-opacity-75 font-normal border-white border-opacity-75 border-dashed px-3 py-1">substantial</span> community transmission</h2>
+        </header>
+        <div class="flex flex-wrap justify-center mt-8">
+          <div class="rounded-md shadow m-8 p-4 bg-white relative w-64">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-40 text-gray-200 my-auto absolute top-0 bottom-0" style="left: -2rem">
+              <path id="perCapita-down" class="hidden" fill-rule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              <path id="perCapita-up" class="hidden" fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/> -->
+            </svg>
+            <h2 class="text-sm uppercase font-bold text-gray-600 text-center absolute tracking-wide top-1 left-0 right-0">cases per 100,000 residents</h2>
+            <div id="perCapita-div" class="text-6xl text-center flex flex-row justify-center content-center leading-tight my-8 z-10 text-gray-400">
+              <span id="currentPerCapita" class="font-bold my-auto leading-none relative" style="font-size: 90px">-</span>
+            </div>
+            <div id="perCapita-caret" class="absolute w-0 h-0 border-gray-800 transition-all duration-300 ease-in-out" style="bottom: 1px; left: 0%; margin-left: -6px; border-width: 6px; border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent"></div>
+            <div id="perCapita-chart" class="h-1 w-full absolute bottom-0 left-0 right-0 flex flex-row">
+              <div class="transition-all ease-in-out duration-300 h-1 bg-green-500" style="flex-grow: 10"></div>
+              <div class="transition-all ease-in-out duration-300 h-1 bg-yellow-500" style="flex-grow: 90"></div>
+              <div class="transition-all ease-in-out duration-300 h-1 bg-red-500" style="flex-grow: 10"></div>
+            </div>
+            <h2 class="text-xs italic text-gray-600 text-center absolute left-0 right-0 leading-loose" style="top:100%">previous week: <span id="previousPerCapita">-</span></h2>
+          </div>
+          <div class="rounded-md shadow m-8 p-4 bg-white relative w-64">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-40 text-gray-200 my-auto absolute top-0 bottom-0" style="left: -2rem;">
+              <path id="positivity-down" class="hidden" fill-rule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+              <path id="positivity-up" class="hidden" fill-rule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/> -->
+            </svg>
+            <h2 class="text-sm uppercase font-bold text-gray-600 text-center absolute tracking-wide top-1 left-0 right-0">test positivity rate</h2>
+            <div id="positivity-div" class="text-6xl text-center flex flex-row justify-center content-center leading-tight my-8 z-10 text-gray-400">
+              <span id="currentPositivity" class="font-bold my-auto leading-none relative" style="font-size: 90px">-</span><span id="percent" class="hidden align-top font-bold leading-normal" style="font-size: 36px;">%</span>
+            </div>
+            <div id="positivity-caret" class="absolute w-0 h-0 border-gray-800 transition-all duration-300 ease-in-out" style="bottom: 1px; left: 0%; margin-left: -6px; border-width: 6px; border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent"></div>
+            <div id="positivity-chart" class="h-1 w-full absolute bottom-0 left-0 right-0 flex flex-row">
+              <div class="h-1 bg-green-500" style="flex-grow: 5"></div>
+              <div class="h-1 bg-yellow-500" style="flex-grow: 5"></div>
+              <div class="h-1 bg-red-500" style="flex-grow: 5"></div>
+            </div>
+            <h2 class="text-xs italic text-gray-600 text-center absolute left-0 right-0 leading-loose" style="top:100%">previous week: <span id="previousPositivity">-</span></h2>
+          </div>
+        </div>
+        <p id="guidance-low" class="guidance hidden px-8 mt-8 text-gray-800 text-xl sm:text-2xl max-w-4xl mx-auto">Based on <a href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx" class="text-blue-700 hover:underline">the Department of Education guidance</a>, schools in <span class="county">Somerset</span> County should be offering <span class="font-black text-gray-700 underline">full in-person</span> or <span class="font-black text-gray-700 underline">blended</span> (hybrid) learning models.</p>
+        <p id="guidance-moderate" class="guidance hidden px-8 mt-8 text-gray-800 text-xl sm:text-2xl max-w-4xl mx-auto">Based on <a href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx" class="text-blue-700 hover:underline">the Department of Education guidance</a>, schools in <span class="county">Somerset</span> County should be offering <span class="font-black text-gray-700 underline">blended</span> (hybrid) or <span class="font-black text-gray-700 underline">full remote</span> learning models.</p>
+        <p id="guidance-substantial" class="guidance hidden px-8 mt-8 text-gray-800 text-xl sm:text-2xl max-w-4xl mx-auto">Based on <a href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx" class="text-blue-700 hover:underline">the Department of Education guidance</a>, schools in <span class="county">Somerset</span> County should be offering <span class="font-black text-gray-700 underline">full remote</span> learning models.</p>
+        <p id="guidance-low-special" class="guidance hidden px-8 mt-8 text-gray-800 text-xl sm:text-2xl max-w-4xl mx-auto">Based on <a href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx" class="text-blue-700 hover:underline">the Department of Education guidance</a>, schools in <span class="county">Somerset</span> County should be offering <span class="font-black text-gray-700 underline">full in-person</span> or <span class="font-black text-gray-700 underline">blended</span> (hybrid) learning models because there are fewer than 10 total cases in the county.</p>
+
+        <div class="mx-auto w-64 my-16">
+          <p class="font-bold text-xs uppercase tracking-wide text-gray-600">View stats for a different county</p>
+          <div class="county-select hidden inline-block relative w-64">
+            <select class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <p id="periods" class="text-xs text-gray-600 italic hidden text-center mb-2"><span id="recentPeriod"></span> <span class="mx-2">|</span> <span id="previousPeriod"></span></p>
+        <footer class="p-8 bg-gray-700 text-xs text-gray-400">
+          <p>This is not an official government website. I created this site to make <a class="text-blue-500 font-semibold hover:underline" href="https://www.education.pa.gov/Schools/safeschools/emergencyplanning/COVID-19/SchoolReopeningGuidance/ReopeningPreKto12/Pages/DeterminingInstructionalModels.aspx">the Department of Education guidance</a> and <a class="text-blue-500 font-semibold hover:underline" href="https://www.health.pa.gov/topics/disease/coronavirus/Pages/Monitoring-Dashboard.aspx">associated data</a> easier to understand. If something looks wrong or you have questions or suggestions, please contact me at <a class="font-semibold text-blue-500 hover:underline" href="mailto:smarx@smarx.com">smarx@smarx.com</a>.</p>
+        </footer>
+      </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            const query = {
+              "version": "1.0.0",
+              "queries": [
+                {
+                  "Query": {
+                    "Commands": [
+                      {
+                        "SemanticQueryDataShapeCommand": {
+                          "Query": {
+                            "Version": 2,
+                            "From": [
+                              {
+                                "Name": "c1",
+                                "Entity": "CountyMonitoringMetrics",
+                                "Type": 0
+                              },
+                              {
+                                "Name": "n",
+                                "Entity": "Navigation",
+                                "Type": 0
+                              },
+                              {
+                                "Name": "r",
+                                "Entity": "Refresh Date",
+                                "Type": 0
+                              },
+                            ],
+                            "Select": [
+                              {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Source": "r"
+                                    }
+                                  },
+                                  "Property": "Table_Title_1"
+                                },
+                                "Name": "Refresh Date.Table_Title"
+                              },
+                              {
+                                "Measure": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Source": "r"
+                                    }
+                                  },
+                                  "Property": "Table_Title_2"
+                                },
+                                "Name": "Refresh Date.Table_Title"
+                              },
+                              {
+                                "Column": {
+                                  "Expression": {
+                                    "SourceRef": {
+                                      "Source": "c1"
+                                    }
+                                  },
+                                  "Property": "County_Name"
+                                },
+                                "Name": "CountyMonitoringMetrics.County_Name"
+                              },
+                              {
+                                "Aggregation": {
+                                  "Expression": {
+                                    "Column": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Source": "c1"
+                                        }
+                                      },
+                                      "Property": "RecentConfCases"
+                                    }
+                                  },
+                                  "Function": 0
+                                },
+                                "Name": "Sum(CountyMonitoringMetrics.RecentConfCases)"
+                              },
+                              {
+                                "Aggregation": {
+                                  "Expression": {
+                                    "Column": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Source": "c1"
+                                        }
+                                      },
+                                      "Property": "PastConfCases"
+                                    }
+                                  },
+                                  "Function": 0
+                                },
+                                "Name": "Sum(CountyMonitoringMetrics.PastConfCases)"
+                              },
+                              {
+                                "Aggregation": {
+                                  "Expression": {
+                                    "Column": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Source": "c1"
+                                        }
+                                      },
+                                      "Property": "RecentIncidence"
+                                    }
+                                  },
+                                  "Function": 0
+                                },
+                                "Name": "Sum(CountyMonitoringMetrics.RecentIncidence)"
+                              },
+                              {
+                                "Aggregation": {
+                                  "Expression": {
+                                    "Column": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Source": "c1"
+                                        }
+                                      },
+                                      "Property": "PastIncidence"
+                                    }
+                                  },
+                                  "Function": 0
+                                },
+                                "Name": "Sum(CountyMonitoringMetrics.PastIncidence)"
+                              },
+                              {
+                                "Aggregation": {
+                                  "Expression": {
+                                    "Column": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Source": "c1"
+                                        }
+                                      },
+                                      "Property": "PctPos7Days Divided by 100"
+                                    }
+                                  },
+                                  "Function": 0
+                                },
+                                "Name": "Sum(CountyMonitoringMetrics.PctPos7Days Divided by 100)"
+                              },
+                              {
+                                "Aggregation": {
+                                  "Expression": {
+                                    "Column": {
+                                      "Expression": {
+                                        "SourceRef": {
+                                          "Source": "c1"
+                                        }
+                                      },
+                                      "Property": "PctPosPrev7Days Divided by 100"
+                                    }
+                                  },
+                                  "Function": 0
+                                },
+                                "Name": "Sum(CountyMonitoringMetrics.PctPosPrev7Days Divided by 100)"
+                              }
+                            ],
+                            "Where": [
+                              {
+                                "Condition": {
+                                  "In": {
+                                    "Expressions": [
+                                      {
+                                        "Column": {
+                                          "Expression": {
+                                            "SourceRef": {
+                                              "Source": "n"
+                                            }
+                                          },
+                                          "Property": "Page name"
+                                        }
+                                      }
+                                    ],
+                                    "Values": [
+                                      [
+                                        {
+                                          "Literal": {
+                                            "Value": "'All Counties'"
+                                          }
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              }
+                            ],
+                            "OrderBy": [
+                              {
+                                "Direction": 1,
+                                "Expression": {
+                                  "Column": {
+                                    "Expression": {
+                                      "SourceRef": {
+                                        "Source": "c1"
+                                      }
+                                    },
+                                    "Property": "County_Name"
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                        }
+                      }
+                    ]
+                  },
+                  "ApplicationContext": {
+                    "DatasetId": "54678c74-4c75-4865-bfe5-8df2679c8382",
+                    "Sources": [
+                      {
+                        "ReportId": "021e457d-d71b-4170-8b7f-c96018b99a5d"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "cancelQueries": [],
+              "modelId": 297418
+            };
+
+            var countyMap = {};
+
+            silkrouter.route('/:county', (e) => {
+              if (countyMap[e.params.county.toUpperCase()]) {
+                populateUI(title(e.params.county));
+              } else {
+                silkrouter.router.set('/', true);
+              }
+            });
+            silkrouter.route('/', (e) => {
+              $('.county-select select').val('');
+              $('#county-not-loaded').removeClass('hidden');
+              $('#county-loaded').addClass('hidden');
+            });
+
+            function populateUI(county) {
+              $('#county-loaded').removeClass('hidden');
+              $('#county-not-loaded').addClass('hidden');
+              $('.county-select select').val(county.toUpperCase());
+              $('.county').text(county);
+              const stats = countyMap[county.toUpperCase()];
+
+              const cases = stats[0];
+              const currentPerCapita = stats[2];
+              const previousPerCapita = stats[3];
+              const currentPositivity = stats[4];
+              const previousPositivity = stats[5];
+
+              var transmission;
+              if (currentPerCapita >= 100 || currentPositivity >= 0.1) {
+                transmission = "substantial";
+              } else if (currentPerCapita >= 10 || currentPositivity >= 0.05) {
+                transmission = "moderate";
+              } else {
+                transmission = "low";
+              }
+
+              $('.guidance').addClass('hidden');
+              if (cases < 10 && transmission !== "low") {
+                transmission = "low";
+                $('#guidance-low-special').removeClass('hidden');
+              } else {
+                $('#guidance-' + transmission).removeClass('hidden');
+              }
+
+              $('#transmission').text(transmission);
+              $('#subheader').removeClass('opacity-0');
+
+              $('#positivity-up, #positivity-down, #perCapita-up, #perCapita-down').addClass('hidden');
+
+              $('#currentPositivity').text(Math.round(currentPositivity * 1000) / 10);
+              $('#previousPositivity').text(Math.round(previousPositivity * 1000) / 10 + '%');
+              $('#positivity-div').removeClass('text-gray-400 text-green-500 text-red-500 text-yellow-500').addClass(
+                currentPositivity >= 0.1 ? 'text-red-500' :
+                currentPositivity >= 0.05 ? 'text-yellow-500' :
+                'text-green-500');
+              $('#percent').removeClass('hidden');
+              if (currentPositivity > previousPositivity) {
+                $('#positivity-up').removeClass('hidden');
+              } else if (currentPositivity < previousPositivity) {
+                $('#positivity-down').removeClass('hidden');
+              }
+
+              $('#currentPerCapita').text(Math.round(currentPerCapita * 10) / 10);
+              $('#previousPerCapita').text(Math.round(previousPerCapita * 10) / 10);
+              $('#perCapita-div').removeClass('text-gray-400 text-green-500 text-red-500 text-yellow-500').addClass(
+                currentPerCapita >= 100 ? 'text-red-500' :
+                currentPerCapita >= 10 ? 'text-yellow-500' :
+                'text-green-500'
+              );
+              if (currentPerCapita > previousPerCapita) {
+                $('#perCapita-up').removeClass('hidden');
+              } else if (currentPerCapita < previousPerCapita) {
+                $('#perCapita-down').removeClass('hidden');
+              }
+
+              var pcLines = $('#perCapita-chart div');
+              var sizes = [10, 90, 10];
+              if (currentPerCapita > 100) {
+                sizes[2] = currentPerCapita - 90;
+              }
+              var total = sizes[0] + sizes[1] + sizes[2];
+              $('#perCapita-caret').css('left', Math.round(currentPerCapita / total * 1000) / 10 + "%");
+              pcLines.each(function (i, el) {
+                $(el).css('flex-grow', sizes[i]);
+              });
+
+              var pLines = $('#positivity-chart div');
+              sizes = [0.05, 0.05, 0.05];
+              if (currentPositivity > 0.1) {
+                sizes[2] = currentPositivity - 0.05;
+              }
+              total = sizes[0] + sizes[1] + sizes[2];
+              $('#positivity-caret').css('left', Math.round(currentPositivity / total * 1000) / 10 + "%");
+              pLines.each(function (i, el) {
+                $(el).css('flex-grow', sizes[i] * 100);
+              });
+            }
+
+            fetch('https://wabi-us-gov-iowa-api.analysis.usgovcloudapi.net/public/reports/querydata?synchronous=true', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-PowerBI-ResourceKey': 'b0a436ca-8c4f-42b5-b6a7-c2da8163568b'
+                },
+                body: JSON.stringify(query)
+            })
+            .then(response => response.json())
+            .then(data => {
+                data = data.results[0].result.data.dsr.DS[0];
+                var counties = data.ValueDicts.D0;
+                var allStats = data.PH[1].DM1;
+                for (var i = 0; i < counties.length; i++) {
+                    if (counties[i].toLowerCase() !== "pennsylvania") {
+                        $('.county-select select').append($("<option />").val(counties[i]).text(title(counties[i])));
+                    }
+                    countyMap[counties[i]] = allStats[i].C.slice(1).map(parseFloat);
+                }
+
+                $('.county-select').removeClass('hidden');
+                $('.county-select select').change(function (e, f) {
+                    silkrouter.router.set('/' + $(this).val().toLowerCase());
+                });
+
+                $('#recentPeriod').text(lowerFirst(data.C[0].replace('7-day', '*').replace('-', ' – ').replace('*', '7-day')));
+                $('#previousPeriod').text(lowerFirst(data.C[2].replace('7-day', '*').replace('-', ' – ').replace('*', '7-day')));
+                $('#periods').removeClass('hidden');
+            });
+
+            function lowerFirst(text) {
+              return text[0].toLowerCase() + text.slice(1);
+            }
+
+            function title(text) {
+              return text[0].toUpperCase() + text.slice(1).toLowerCase();
+            }
+        </script>
+    </body>
+</html>
