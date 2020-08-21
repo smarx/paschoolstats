@@ -1,2 +1,2 @@
-aws s3 sync . s3://paschoolstats-web --exclude '.git/*' --exclude sync --delete
+aws s3 sync . s3://paschoolstats-web --exclude '.git/*' --exclude sync --exclude main.go --delete
 aws cloudfront create-invalidation --distribution-id E3J16UROC18780 --paths '/*'
