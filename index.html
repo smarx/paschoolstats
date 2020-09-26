@@ -6,7 +6,7 @@
         <title>Pennsylvania School Stats</title>
         <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/silkrouter@latest"></script>
+        <script src="https://cdn.jsdelivr.net/npm/silkrouter@3.5.9"></script>
         <link rel="icon" href="/static/favicon.png" />
         <style>
           div.hidden {
@@ -143,7 +143,7 @@
                                   },
                                   "Property": "Table_Title_1"
                                 },
-                                "Name": "Refresh Date.Table_Title"
+                                "Name": "Refresh Date.Table_Title1"
                               },
                               {
                                 "Measure": {
@@ -154,7 +154,7 @@
                                   },
                                   "Property": "Table_Title_2"
                                 },
-                                "Name": "Refresh Date.Table_Title"
+                                "Name": "Refresh Date.Table_Title2"
                               },
                               {
                                 "Column": {
@@ -448,7 +448,19 @@
                     if (counties[i].toLowerCase() !== "pennsylvania") {
                         $('.county-select select').append($("<option />").val(counties[i]).text(title(counties[i])));
                     }
-                    countyMap[counties[i]] = allStats[i].C.slice(1).map(parseFloat);
+                    var missingBits = allStats[i].R;
+                    var c = allStats[i].C;
+                    var a = [];
+                    var j = 0;
+                    while (a.length < 9) {
+                      if (missingBits & 2**(a.length)) {
+                        a.push(0);
+                      } else {
+                        a.push(c[j]);
+                        j += 1;
+                      }
+                    }
+                    countyMap[counties[i]] = a.slice(3).map(parseFloat);// allStats[i].C.slice(1).map(parseFloat);
                 }
 
                 $('.county-select').removeClass('hidden');
