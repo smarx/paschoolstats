@@ -444,6 +444,7 @@
                 data = data.results[0].result.data.dsr.DS[0];
                 var counties = data.ValueDicts.D0;
                 var allStats = data.PH[1].DM1;
+                var prev = [0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for (var i = 0; i < counties.length; i++) {
                     if (counties[i].toLowerCase() !== "pennsylvania") {
                         $('.county-select select').append($("<option />").val(counties[i]).text(title(counties[i])));
@@ -454,13 +455,14 @@
                     var j = 0;
                     while (a.length < 9) {
                       if (missingBits & 2**(a.length)) {
-                        a.push(0);
+                        a.push(prev[a.length]);
                       } else {
                         a.push(c[j]);
                         j += 1;
                       }
                     }
                     countyMap[counties[i]] = a.slice(3).map(parseFloat);// allStats[i].C.slice(1).map(parseFloat);
+                    prev = a;
                 }
 
                 $('.county-select').removeClass('hidden');
