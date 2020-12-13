@@ -403,8 +403,8 @@
                 $('#positivity-down').removeClass('hidden');
               }
 
-              $('#currentPerCapita').text(Math.round(currentPerCapita * 10) / 10);
-              $('#previousPerCapita').text(Math.round(previousPerCapita * 10) / 10);
+              $('#currentPerCapita').text(currentPerCapita >= 100 ? Math.round(currentPerCapita) : Math.round(currentPerCapita * 10) / 10);
+              $('#previousPerCapita').text(previousPerCapita >= 100 ? Math.round(previousPerCapita) : Math.round(previousPerCapita * 10) / 10);
               $('#perCapita-div').removeClass('text-gray-400 text-green-500 text-red-500 text-yellow-500').addClass(
                 currentPerCapita >= 100 ? 'text-red-500' :
                 currentPerCapita >= 10 ? 'text-yellow-500' :
